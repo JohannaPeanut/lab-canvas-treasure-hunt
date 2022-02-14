@@ -80,36 +80,43 @@ const drawTreasure = () => {
 };
 
 const drawPlayer = () => {
-  playerImage.addEventListener('load', () => {
-    context.drawImage(playerImage, player.row, player.col);
-  });
+  context.drawImage(playerImage, player.row, player.col);
+};
+
+const clean = (row, col) => {
+  context.clearRect(row + 2, col + 2, size - 4, size - 4);
 };
 
 function drawEverything() {
   drawGrid();
-  drawPlayer();
+  playerImage.addEventListener('load', () => {
+    drawPlayer();
+  });
   drawTreasure();
 }
 
-document.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', (event) => {
   // Stop the default behavior (moving the screen to the left/up/right/down)
   event.preventDefault();
-  const keyCode = event.keyCode;
-  // React based on the key pressed
-  switch (keyCode) {
+
+  switch (event.keyCode) {
     case 37:
+      clean(player.row, player.col);
       player.moveLeft();
       drawPlayer();
       break;
     case 38:
+      clean(player.row, player.col);
       player.moveUp();
       drawPlayer();
       break;
     case 39:
+      clean(player.row, player.col);
       player.moveRight();
       drawPlayer();
       break;
     case 40:
+      clean(player.row, player.col);
       player.moveDown();
       drawPlayer();
       break;
