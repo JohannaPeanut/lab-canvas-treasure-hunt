@@ -36,18 +36,23 @@ class Character {
   constructor(col, row) {
     this.col = col;
     this.row = row;
+    this.direction = 'down';
   }
   moveUp() {
-    this.col -= size;
+    this.direction = 'up';
+    if (this.col > 0) this.col -= size;
   }
   moveRight() {
-    this.row += size;
+    this.direction = 'right';
+    if (this.row < 9 * size) this.row += size;
   }
   moveDown() {
-    this.col += size;
+    this.direction = 'down';
+    if (this.col < 9 * size) this.col += size;
   }
   moveLeft() {
-    this.row -= size;
+    this.direction = 'left';
+    if (this.row > 0) this.row -= size;
   }
 }
 
@@ -62,16 +67,6 @@ class Treasure {
   }
 }
 
-const player = new Character(0, 0);
-
-const treasure = new Treasure();
-
-const playerImage = new Image();
-playerImage.src = 'images/character-down.png';
-
-const treasureImage = new Image();
-treasureImage.src = 'images/treasure.png';
-
 const drawTreasure = () => {
   treasure.setRandomPosition();
   treasureImage.addEventListener('load', () => {
@@ -79,8 +74,22 @@ const drawTreasure = () => {
   });
 };
 
-const drawPlayer = () => {
-  context.drawImage(playerImage, player.row, player.col);
+const drawPlayer = (character) => {
+  switch (character.direction) {
+    case 'down':
+      playerImage.src = 'images/character-down.png';
+      break;
+    case 'up':
+      playerImage.src = 'images/character-up.png';
+      break;
+    case 'left':
+      playerImage.src = 'images/character-left.png';
+      break;
+    case 'right':
+      playerImage.src = 'images/character-right.png';
+      break;
+  }
+  context.drawImage(playerImage, character.row, character.col);
 };
 
 const clean = (row, col) => {
@@ -90,10 +99,24 @@ const clean = (row, col) => {
 function drawEverything() {
   drawGrid();
   playerImage.addEventListener('load', () => {
-    drawPlayer();
+    drawPlayer(player);
+  });
+  playerImage.addEventListener('load', () => {
+    drawPlayer(secondPlayer);
   });
   drawTreasure();
 }
+
+const player = new Character(0, 0);
+
+const secondPlayer = new Character(size, size);
+
+const treasure = new Treasure();
+
+const playerImage = new Image();
+
+const treasureImage = new Image();
+treasureImage.src = 'images/treasure.png';
 
 window.addEventListener('keydown', (event) => {
   // Stop the default behavior (moving the screen to the left/up/right/down)
@@ -103,24 +126,55 @@ window.addEventListener('keydown', (event) => {
     case 37:
       clean(player.row, player.col);
       player.moveLeft();
-      drawPlayer();
+      drawPlayer(player);
       break;
     case 38:
       clean(player.row, player.col);
       player.moveUp();
-      drawPlayer();
+      drawPlayer(player);
       break;
     case 39:
       clean(player.row, player.col);
       player.moveRight();
-      drawPlayer();
+      drawPlayer(player);
       break;
     case 40:
       clean(player.row, player.col);
       player.moveDown();
-      drawPlayer();
+      drawPlayer(player);
+      break;
+  }
+
+  switch (event.keyCode) {
+    case 65:
+      clean(secondPlayer.row, secondPlayer.col);
+      secondPlayer.moveLeft();
+      drawPlayer(secondPlayer);
+      break;
+    case 87:
+      clean(secondPlayer.row, secondPlayer.col);
+      secondPlayer.moveUp();
+      drawPlayer(secondPlayer);
+      break;
+    case 68:
+      clean(secondPlayer.row, secondPlayer.col);
+      secondPlayer.moveRight();
+      drawPlayer(secondPlayer);
+      break;
+    case 83:
+      clean(secondPlayer.row, secondPlayer.col);
+      secondPlayer.moveDown();
+      drawPlayer(secondPlayer);
       break;
   }
 });
 
 drawEverything();
+
+// since secondPlayer: both players are invisible when I load page - why?
+// why are some grid lines more bold?
+
+// to do:
+// treasure invisible?
+// player score
+// effect when treasure found?
